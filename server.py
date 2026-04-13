@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from openai import OpenAI
 import os
 import uuid
+import traceback
 
 app = FastAPI()
 
@@ -21,21 +23,31 @@ WORKFLOW_ID = "wf_69dc2de445a08190adc85f13727d38540280571ebd518534"
 def home():
     return {
         "status": "ok",
-        "version": "cors-fix-v1"
+        "version": "debug-v2"
     }
 
 @app.post("/api/chatkit/session")
 def create_session():
-    user_id = f"eczane-{uuid.uuid4()}"
+    try:
+        user_id = f"eczane-{uuid.uuid4()}"
 
-    session = client.beta.chatkit.sessions.create(
-        user=user_id,
-        workflow={"id": WORKFLOW_ID},
-        file_upload={
-            "enabled": True,
-            "max_file_size": 20,
-            "max_files": 3
-        }
-    )
+        session = client.beta.chatkit.sessions.create(
+            user=user_id,
+            workflow={"id": WORKFLOW_ID},
+            file_upload={
+                "enabled": True,
+                "max_file_size": 20,
+                "max_files": 3
+            }
+        )
 
-    return {"client_secret": session.client_secret}
+        return {"client_secret": session.client_secret}
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e),
+                "trace": traceback.format_exc()
+            }
+        )
