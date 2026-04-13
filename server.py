@@ -24,8 +24,15 @@ def home():
 @app.post("/api/chatkit/session")
 def create_session():
     user_id = f"eczane-{uuid.uuid4()}"
+
     session = client.beta.chatkit.sessions.create(
         user=user_id,
-        workflow={"id": WORKFLOW_ID}
+        workflow={"id": WORKFLOW_ID},
+        file_upload={
+            "enabled": True,
+            "max_file_size": 20,
+            "max_files": 3
+        }
     )
+
     return {"client_secret": session.client_secret}
