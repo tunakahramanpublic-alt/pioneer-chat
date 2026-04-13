@@ -1,0 +1,31 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
+import os
+import uuid
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+WORKFLOW_ID = "wf_69dc2de445a08190adc85f13727d38540280571ebd518534"
+
+@app.get("/")
+def home():
+    return {"status": "ok"}
+
+@app.post("/api/chatkit/session")
+def create_session():
+    user_id = f"eczane-{uuid.uuid4()}"
+    session = client.beta.chatkit.sessions.create(
+        user=user_id,
+        workflow={"id": WORKFLOW_ID}
+    )
+    return {"client_secret": session.client_secret}

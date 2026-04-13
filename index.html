@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pioneer</title>
+  <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js" async></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .header {
+      padding: 16px;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    #chat-container {
+      height: calc(100vh - 60px);
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    #my-chat {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Pioneer</div>
+  <div id="chat-container">
+    <openai-chatkit id="my-chat"></openai-chatkit>
+  </div>
+
+  <script>
+    async function initChat() {
+      const el = document.getElementById("my-chat");
+
+      async function waitForElementOptions() {
+        return new Promise((resolve) => {
+          const timer = setInterval(() => {
+            if (el && typeof el.setOptions === "function") {
+              clearInterval(timer);
+              resolve();
+            }
+          }, 300);
+        });
+      }
+
+      await waitForElementOptions();
+
+      el.setOptions({
+        api: {
+          async getClientSecret() {
+            const res = await fetch("BURAYA_RENDER_LINKI_GELECEK/api/chatkit/session", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              }
+            });
+
+            const data = await res.json();
+            return data.client_secret;
+          }
+        }
+      });
+    }
+
+    initChat();
+  </script>
+</body>
+</html>
