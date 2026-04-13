@@ -6,15 +6,11 @@ import uuid
 
 app = FastAPI()
 
-origins = [
-    "https://keen-madeleine-db435b.netlify.app",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_origins=["https://keen-madeleine-db435b.netlify.app"],
+    allow_credentials=False,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -23,7 +19,10 @@ WORKFLOW_ID = "wf_69dc2de445a08190adc85f13727d38540280571ebd518534"
 
 @app.get("/")
 def home():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "version": "cors-fix-v1"
+    }
 
 @app.post("/api/chatkit/session")
 def create_session():
