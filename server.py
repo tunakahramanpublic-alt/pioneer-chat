@@ -23,7 +23,7 @@ WORKFLOW_ID = "wf_69dc2de445a08190adc85f13727d38540280571ebd518534"
 def home():
     return {
         "status": "ok",
-        "version": "stable-no-upload"
+        "version": "upload-nested-v1"
     }
 
 @app.post("/api/chatkit/session")
@@ -33,7 +33,14 @@ def create_session():
 
         session = client.beta.chatkit.sessions.create(
             user=user_id,
-            workflow={"id": WORKFLOW_ID}
+            workflow={"id": WORKFLOW_ID},
+            chatkit_configuration={
+                "file_upload": {
+                    "enabled": True,
+                    "max_file_size": 20,
+                    "max_files": 3
+                }
+            }
         )
 
         return {"client_secret": session.client_secret}
